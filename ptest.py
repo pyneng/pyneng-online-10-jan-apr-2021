@@ -275,6 +275,8 @@ def cli(tasks, disable_verbose, answer, check):
     else:
         pytest_args = [*pytest_args_common, "-vv"]
 
+    # если добавлен флаг -a или -c нет смысла выводить traceback,
+    # так как скорее всего задания уже проверены предыдущими запусками.
     if answer or check:
         pytest_args = [*pytest_args_common, "--tb=no"]
 
