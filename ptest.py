@@ -268,14 +268,15 @@ def cli(tasks, disable_verbose, answer, check):
     или указать пароль при запуске скрипта с флагом -c (--check).
     """
     json_plugin = JSONReport()
+    pytest_args_common = ["--json-report-file=none", "--disable-warnings", "--no-hints"]
 
     if disable_verbose:
-        pytest_args = ["--json-report-file=none", "--tb=short", "--disable-warnings"]
+        pytest_args = [*pytest_args_common, "--tb=short"]
     else:
-        pytest_args = ["-vv", "--json-report-file=none", "--disable-warnings"]
+        pytest_args = [*pytest_args_common, "-vv"]
 
     if answer or check:
-        pytest_args = ["--json-report-file=none", "--tb=no", "--disable-warnings"]
+        pytest_args = [*pytest_args_common, "--tb=no"]
 
     # запуск pytest
     if tasks == "all":
