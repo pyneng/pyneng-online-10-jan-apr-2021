@@ -11,8 +11,13 @@
 Пример выполнения скрипта:
 $ python task_5_1b.py
 Введите имя устройства: r1
-Введите имя параметра (ios, model, vendor, location, ip): ip
+Введите имя параметра (location, vendor, model, ios, ip): ip
 10.255.0.1
+
+$ python task_5_1b.py
+Введите имя устройства: sw1
+Введите имя параметра (location, vendor, model, ios, ip, vlans, routing): ip
+10.255.0.101
 
 Ограничение: нельзя изменять словарь london_co.
 
