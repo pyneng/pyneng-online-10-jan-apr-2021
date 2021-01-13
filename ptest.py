@@ -46,9 +46,9 @@ class CustomTasksType(click.ParamType):
                 if "-" in task:
                     start, end = task.split("-")
                     for t in range(int(start), int(end) + 1):
-                        tasks.append(t)
+                        tasks.append(str(t))
                 else:
-                    tasks.append(int(task))
+                    tasks.append(task)
             all_test_files_in_current_dir = os.listdir(".")
             test_files = [f"test_task_{current_chapter}_{num}.py" for num in tasks]
             test_files = [
