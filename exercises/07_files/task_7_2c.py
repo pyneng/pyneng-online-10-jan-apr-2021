@@ -16,4 +16,4 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
 
-ignore = ["duplex", "alias", "Current configuration"]
+ignore = ["duplex", "alias", "configuration"]
