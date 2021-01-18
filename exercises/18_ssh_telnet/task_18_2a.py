@@ -17,5 +17,6 @@ In [14]: result = send_config_commands(r1, commands, log=False)
 
 In [15]:
 
-Скрипт должен отправлять список команд commands на все устройства из файла devices.yaml с помощью функции send_config_commands.
+Скрипт должен отправлять список команд commands на все устройства
+из файла devices.yaml с помощью функции send_config_commands.
 """
