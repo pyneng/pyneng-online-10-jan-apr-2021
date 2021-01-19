@@ -19,7 +19,6 @@ import pytest
 from pytest_jsonreport.plugin import JSONReport
 import requests
 from github import Github
-from github_token_stored import GITHUB_TOKEN
 
 
 class CustomTasksType(click.ParamType):
@@ -93,9 +92,10 @@ def post_comment_to_last_commit(msg, repo, delta_days=14):
 
     Пароль берется из переменной окружения GITHUB_PASS или запрашивается.
     """
+    token = os.environ.get("GITHUB_TOKEN")
     since = datetime.now() - timedelta(days=delta_days)
 
-    g = Github(GITHUB_TOKEN)
+    g = Github(token)
     repo_name = f"pyneng/{repo}"
     repo_obj = g.get_repo(repo_name)
     commits = repo_obj.get_commits(since=since)
@@ -301,7 +301,8 @@ def cli(tasks, disable_verbose, answer, check):
 
         # сдать задания на проверку через github API
         if check:
-            if not GITHUB_TOKEN:
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
                 raise ValueError(
                     "Для сдачи заданий на проверку надо сгенерировать токен github."
                     "Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/"
