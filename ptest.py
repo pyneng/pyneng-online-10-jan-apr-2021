@@ -19,6 +19,7 @@ import pytest
 from pytest_jsonreport.plugin import JSONReport
 import requests
 from github import Github
+from github_token_stored import GITHUB_TOKEN
 
 
 class CustomTasksType(click.ParamType):
@@ -92,10 +93,9 @@ def post_comment_to_last_commit(msg, repo, delta_days=14):
 
     Пароль берется из переменной окружения GITHUB_PASS или запрашивается.
     """
-    token = os.environ.get("GITHUB_TOKEN")
     since = datetime.now() - timedelta(days=delta_days)
 
-    g = Github(token)
+    g = Github(GITHUB_TOKEN)
     repo_name = f"pyneng/{repo}"
     repo_obj = g.get_repo(repo_name)
     commits = repo_obj.get_commits(since=since)
@@ -269,8 +269,8 @@ def cli(tasks, disable_verbose, answer, check):
     Флаг -a записывает ответы в файлы answer_task_x.py, если тесты проходят.
     Флаг -c сдает на проверку задания (пишет комментарий на github)
     для которых прошли тесты.
-    Для сдачи заданий на проверку надо создать переменную окружения GITHUB_PASS
-    или указать пароль при запуске скрипта с флагом -c (--check).
+    Для сдачи заданий на проверку надо сгенерировать токен github.
+    Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/
     """
     json_plugin = JSONReport()
     pytest_args_common = ["--json-report-file=none", "--disable-warnings", "--no-hints"]
@@ -301,11 +301,10 @@ def cli(tasks, disable_verbose, answer, check):
 
         # сдать задания на проверку через github API
         if check:
-            token = os.environ.get("GITHUB_TOKEN")
-            if not token:
+            if not GITHUB_TOKEN:
                 raise ValueError(
                     "Для сдачи заданий на проверку надо сгенерировать токен github."
-                    "Подробнее в инструкции: ..."
+                    "Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/"
                 )
             send_tasks_to_check(passed_tasks)
 
