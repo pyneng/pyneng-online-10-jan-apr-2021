@@ -3,7 +3,7 @@
 """
 Задание 24.2a
 
-Дополнить класс MyNetmiko из задания 24.2.
+Скопировать и дополнить класс MyNetmiko из задания 24.2.
 
 Добавить метод _check_error_in_command, который выполняет проверку на такие ошибки:
  * Invalid input detected, Incomplete command, Ambiguous command
