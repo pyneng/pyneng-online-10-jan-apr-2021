@@ -38,7 +38,7 @@ def test_function_params(r1_test_connection, first_router_from_devices_yaml):
     with pytest.raises(ValueError) as excinfo:
         # Если передаются оба аргумента и show и config,
         # должно генерироваться исключение ValueError
-        return_value_show = task_18_3.send_commands(
+        task_18_3.send_commands(
             first_router_from_devices_yaml, show=show_command, config=cfg_commands
         )
 
