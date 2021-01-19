@@ -14,6 +14,23 @@
 
 Функция ничего не возвращает.
 
+Аргументы show, config и limit должны передаваться только как ключевые. При передачи
+этих аргументов как позиционных, должно генерироваться исключение TypeError.
+
+In [4]: send_commands_to_devices(devices, 'result.txt', 'sh clock')
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-4-75adcfb4a005> in <module>
+----> 1 send_commands_to_devices(devices, 'result.txt', 'sh clock')
+
+TypeError: send_commands_to_devices() takes 2 positional argument but 3 were given
+
+
+При вызове функции send_commands_to_devices, всегда должен передаваться
+только один из аргументов show, config. Если передаются оба аргумента, должно
+генерироваться исключение ValueError.
+
+
 Вывод команд должен быть записан в файл в таком формате
 (перед выводом команды надо написать имя хоста и саму команду):
 
@@ -32,7 +49,7 @@ Ethernet0/0                192.168.100.3   YES NVRAM  up                    up
 Ethernet0/1                unassigned      YES NVRAM  administratively down down
 
 Пример вызова функции:
-In [5]: send_commands_to_devices(devices, show='sh clock', filename='result.txt')
+In [5]: send_commands_to_devices(devices, 'result.txt', show='sh clock')
 
 In [6]: cat result.txt
 R1#sh clock
@@ -42,7 +59,7 @@ R2#sh clock
 R3#sh clock
 *04:56:40.354 UTC Sat Mar 23 2019
 
-In [11]: send_commands_to_devices(devices, config='logging 10.5.5.5', filename='result.txt')
+In [11]: send_commands_to_devices(devices, 'result.txt', config='logging 10.5.5.5')
 
 In [12]: cat result.txt
 config term
@@ -61,9 +78,9 @@ R3(config)#logging 10.5.5.5
 R3(config)#end
 R3#
 
-In [13]: send_commands_to_devices(devices,
-                                  config=['router ospf 55', 'network 0.0.0.0 255.255.255.255 area 0'],
-                                  filename='result.txt')
+In [13]: commands = ['router ospf 55', 'network 0.0.0.0 255.255.255.255 area 0']
+
+In [13]: send_commands_to_devices(devices, 'result.txt', config=commands)
 
 In [14]: cat result.txt
 config term
