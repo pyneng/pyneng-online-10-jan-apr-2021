@@ -19,6 +19,28 @@
 
 Для проверки надо ли игнорировать строку, использовать функцию ignore_command.
 
+Часть словаря, который должна возвращать функция (полный вывод можно посмотреть
+в тесте test_task_9_4.py):
+{
+    "version 15.0": [],
+    "service timestamps debug datetime msec": [],
+    "service timestamps log datetime msec": [],
+    "no service password-encryption": [],
+    "hostname sw1": [],
+    "interface FastEthernet0/0": [
+        "switchport mode access",
+        "switchport access vlan 10",
+    ],
+    "interface FastEthernet0/1": [
+        "switchport trunk encapsulation dot1q",
+        "switchport trunk allowed vlan 100,200",
+        "switchport mode trunk",
+    ],
+    "interface FastEthernet0/2": [
+        "switchport mode access",
+        "switchport access vlan 20",
+    ],
+}
 
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
