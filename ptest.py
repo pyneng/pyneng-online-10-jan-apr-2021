@@ -10,6 +10,7 @@ from getpass import getpass
 import stat
 import shutil
 from datetime import datetime, timedelta
+from glob import glob
 
 
 import click
@@ -30,31 +31,34 @@ class CustomTasksType(click.ParamType):
     """
 
     def convert(self, value, param, ctx):
-        if not re.fullmatch(r"all|\d[\da-l ,-]*", value):
-            self.fail(
-                "в строке заданий должны содержаться "
-                "только числа, буквы и символы: "
-                "запятая, пробел и -"
-            )
-        if value == "all":
-            return value
-        else:
-            current_chapter = get_chapter()
-            tasks_list = re.split(r"[ ,]+", value)
-            tasks = []
-            for task in tasks_list:
-                if "-" in task:
-                    start, end = task.split("-")
-                    for t in range(int(start), int(end) + 1):
-                        tasks.append(str(t))
+        regex = (
+            r"(?P<all>all)|"
+            r"(?P<number_star>\d\*)|"
+            r"(?P<letters_range>\d[a-i]-[a-i])|"
+            r"(?P<numbers_range>\d-\d)|"
+            r"(?P<single_task>\d[a-i]?)"
+        )
+        current_chapter = get_chapter()
+        tasks_list = re.split(r"[ ,]+", value)
+        test_files = []
+        for task in tasks_list:
+            match = re.fullmatch(regex, task)
+            if match:
+                if task == "all":
+                    return value
                 else:
-                    tasks.append(task)
-            all_test_files_in_current_dir = os.listdir(".")
-            test_files = [f"test_task_{current_chapter}_{num}.py" for num in tasks]
-            test_files = [
-                test for test in test_files if test in all_test_files_in_current_dir
-            ]
-            return test_files
+                    if match.group("letters_range"):
+                        task = f"{task[0]}[{task[1:]}]"  # convert 1a-c to 1[a-c]
+                    elif match.group("numbers_range"):
+                        task = f"[{task}]"  # convert 1-3 to [1-3]
+
+                    test_files += glob(f"test_task_{current_chapter}_{task}.py")
+            else:
+                self.fail(
+                    f"Данный формат не поддерживается {task}. "
+                    "Допустимые форматы: 1, 1a, 1b-d, 1*, 1-3"
+                )
+        return test_files
 
 
 def call_command(command, verbose=True):
