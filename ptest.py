@@ -124,7 +124,7 @@ def send_tasks_to_check(passed_tasks):
     for task in ok_tasks:
         call_command(f"git add {task}")
     call_command(f'git commit -m "{message}"')
-    call_command("git push origin main")
+    call_command("git push origin master")
 
     pth = str(pathlib.Path().absolute())
     # repo_match = re.search(r"preparation-pyneng-10-jan-apr-2021", pth)
