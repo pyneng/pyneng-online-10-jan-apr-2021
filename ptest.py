@@ -179,7 +179,7 @@ def send_tasks_to_check(passed_tasks):
     что задания сдаются на проверку с помощью функции post_comment_to_last_commit.
     """
     ok_tasks = [test.replace("test_", "") for test in passed_tasks]
-    tasks_num_only = [task.replace("task_", "").replace(".py", "") for task in ok_tasks]
+    tasks_num_only = sorted([task.replace("task_", "").replace(".py", "") for task in ok_tasks])
     message = f"Сделаны задания {' '.join(tasks_num_only)}"
 
     for task in ok_tasks:
