@@ -12,6 +12,7 @@ setup(
         "pytest-json-report",
         "requests",
         "PyGithub",
+        "six",
     ],
     entry_points="""
         [console_scripts]

@@ -1,3 +1,4 @@
+import sys
 import subprocess
 import re
 import os
@@ -18,7 +19,48 @@ import yaml
 import pytest
 from pytest_jsonreport.plugin import JSONReport
 import requests
-from github import Github
+import github
+
+
+task_dirs = [
+    "04_data_structures",
+    "05_basic_scripts",
+    "06_control_structures",
+    "07_files",
+    "09_functions",
+    "11_modules",
+    "12_useful_modules",
+    "15_module_re",
+    "17_serialization",
+    "18_ssh_telnet",
+    "19_concurrent_connections",
+    "20_jinja2",
+    "21_textfsm",
+    "22_oop_basics",
+    "23_oop_special_methods",
+    "24_oop_inheritance",
+]
+
+
+class PtestError(Exception):
+    """
+    Ошибка в использовании/работе скрипта ptest
+    """
+
+
+def red(msg):
+    return click.style(msg, fg="red")
+
+
+def green(msg):
+    return click.style(msg, fg="green")
+
+
+def exception_handler(exception_type, exception, traceback):
+    """
+    sys.excepthook для отключения traceback по умолчанию
+    """
+    print(f"\n{exception_type.__name__}: {exception}\n")
 
 
 class CustomTasksType(click.ParamType):
@@ -38,7 +80,17 @@ class CustomTasksType(click.ParamType):
             r"(?P<numbers_range>\d-\d)|"
             r"(?P<single_task>\d[a-i]?)"
         )
-        current_chapter = get_chapter()
+        current_chapter = current_dir_name()
+        if current_chapter not in task_dirs:
+            task_dirs_line = "\n    ".join(task_dirs)
+            self.fail(
+                red(
+                    f"\nСкрипт нужно вызывать из каталогов с заданиями:"
+                    f"\n    {task_dirs_line}"
+                )
+            )
+
+        current_chapter = current_chapter_id()
         tasks_list = re.split(r"[ ,]+", value)
         test_files = []
         for task in tasks_list:
@@ -55,13 +107,15 @@ class CustomTasksType(click.ParamType):
                     test_files += glob(f"test_task_{current_chapter}_{task}.py")
             else:
                 self.fail(
-                    f"Данный формат не поддерживается {task}. "
-                    "Допустимые форматы: 1, 1a, 1b-d, 1*, 1-3"
+                    red(
+                        f"Данный формат не поддерживается {task}. "
+                        "Допустимые форматы: 1, 1a, 1b-d, 1*, 1-3"
+                    )
                 )
         return test_files
 
 
-def call_command(command, verbose=True):
+def call_command(command, verbose=True, return_stdout=False):
     """
     Функция вызывает указанную command через subprocess
     и выводит stdout и stderr, если флан verbose=True.
@@ -71,14 +125,15 @@ def call_command(command, verbose=True):
         shell=True,
         encoding="utf-8",
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
     )
     std = result.stdout
+    if return_stdout:
+        return std
     if verbose:
         print("#" * 20, command)
         if std:
             print(std)
-    return std
+    return result.returncode
 
 
 def post_comment_to_last_commit(msg, repo, delta_days=14):
@@ -94,18 +149,24 @@ def post_comment_to_last_commit(msg, repo, delta_days=14):
     """
     token = os.environ.get("GITHUB_TOKEN")
     since = datetime.now() - timedelta(days=delta_days)
-
-    g = Github(token)
     repo_name = f"pyneng/{repo}"
-    repo_obj = g.get_repo(repo_name)
-    commits = repo_obj.get_commits(since=since)
 
     try:
-        last = commits[0]
-    except IndexError:
-        print("За указанный период времени не найдено коммитов")
+        g = github.Github(token)
+        repo_obj = g.get_repo(repo_name)
+    except github.GithubException:
+        raise PtestError(red(
+            "Аутентификация по токену не прошла. Задание не сдано на проверку"
+        ))
     else:
-        last.create_comment(msg)
+        commits = repo_obj.get_commits(since=since)
+
+        try:
+            last = commits[0]
+        except IndexError:
+            print("За указанный период времени не найдено коммитов")
+        else:
+            last.create_comment(msg)
 
 
 def send_tasks_to_check(passed_tasks):
@@ -126,17 +187,19 @@ def send_tasks_to_check(passed_tasks):
     call_command(f'git commit -m "{message}"')
     call_command("git push origin master")
 
-    pth = str(pathlib.Path().absolute())
-    # repo_match = re.search(r"preparation-pyneng-10-jan-apr-2021", pth)
-    repo_match = re.search(r"online-\d+-\w+-\w+", pth)
+    git_remote = call_command("git remote -v", return_stdout=True)
+    repo_match = re.search(r"online-\d+-\w+-\w+", git_remote)
     if repo_match:
         repo = repo_match.group()
     else:
-        raise ValueError("Не найден репозиторий online-10-имя-фамилия")
+        raise PtestError(red(
+            "Не найден репозиторий online-10-имя-фамилия. "
+            "ptest надо вызывать в репозитории подготовленном для курса."
+        ))
     post_comment_to_last_commit(message, repo)
 
 
-def get_chapter():
+def current_chapter_id():
     """
     Функция возвращает номер текущего раздела, где вызывается ptest.
     """
@@ -144,6 +207,12 @@ def get_chapter():
     last_dir = os.path.split(pth)[-1]
     current_chapter = int(last_dir.split("_")[0])
     return current_chapter
+
+
+def current_dir_name():
+    pth = str(pathlib.Path().absolute())
+    current_chapter_name = os.path.split(pth)[-1]
+    return current_chapter_name
 
 
 def parse_json_report(report):
@@ -176,21 +245,23 @@ def copy_answers(passed_tasks):
 
     homedir = pathlib.Path.home()
     os.chdir(homedir)
-    call_command(
+    returncode = call_command(
         "git clone --depth=1 https://github.com/natenka/pyneng-answers",
         verbose=False,
     )
-    os.chdir(f"pyneng-answers/answers/{current_chapter_name}")
-    copy_answer_files(passed_tasks, pth)
-    click.secho(
-        (
-            "\nОтветы на задания, которые прошли тесты "
-            "скопированы в файлы answer_task_x.py\n"
-        ),
-        fg="green",
-    )
-    os.chdir(homedir)
-    shutil.rmtree("pyneng-answers", onerror=remove_readonly)
+    if returncode == 0:
+        os.chdir(f"pyneng-answers/answers/{current_chapter_name}")
+        copy_answer_files(passed_tasks, pth)
+        print(
+            green(
+                "\nОтветы на задания, которые прошли тесты "
+                "скопированы в файлы answer_task_x.py\n"
+            )
+        )
+        os.chdir(homedir)
+        shutil.rmtree("pyneng-answers", onerror=remove_readonly)
+    else:
+        raise PtestError(red("Не получилось скопировать ответы."))
     os.chdir(pth)
 
 
@@ -246,7 +317,8 @@ def copy_answer_files(passed_tasks, pth):
         "не выводится traceback для тестов."
     ),
 )
-def cli(tasks, disable_verbose, answer, check):
+@click.option("--debug", is_flag=True, help="Показывать traceback исключений")
+def cli(tasks, disable_verbose, answer, check, debug):
     """
     Запустить тесты для заданий TASKS. По умолчанию запустятся все тесты.
 
@@ -272,6 +344,9 @@ def cli(tasks, disable_verbose, answer, check):
     Для сдачи заданий на проверку надо сгенерировать токен github.
     Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/
     """
+    if not debug:
+        sys.excepthook = exception_handler
+
     json_plugin = JSONReport()
     pytest_args_common = ["--json-report-file=none", "--disable-warnings", "--no-hints"]
 
@@ -303,9 +378,11 @@ def cli(tasks, disable_verbose, answer, check):
         if check:
             token = os.environ.get("GITHUB_TOKEN")
             if not token:
-                raise ValueError(
-                    "Для сдачи заданий на проверку надо сгенерировать токен github."
-                    "Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/"
+                raise PtestError(
+                    red(
+                        "Для сдачи заданий на проверку надо сгенерировать токен github. "
+                        "Подробнее в инструкции: https://pyneng.github.io/docs/ptest-prepare/"
+                    )
                 )
             send_tasks_to_check(passed_tasks)
 
