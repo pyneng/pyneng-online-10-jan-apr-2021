@@ -1,2 +1,0 @@
-log_server: 10.1.1.1
-run_command: sh run | i hostname

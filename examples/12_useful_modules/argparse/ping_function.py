@@ -9,7 +9,7 @@ def ping_ip(ip_address, count):
     On failure: (return code, error output (stderr))
     """
     reply = subprocess.run(
-        "ping -c {count} -n {ip}".format(count=count, ip=ip_address),
+        f"ping -c {count} -n {ip_address}",
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -23,8 +23,8 @@ def ping_ip(ip_address, count):
 
 parser = argparse.ArgumentParser(description="Ping script")
 
-parser.add_argument("-a", action="store", dest="ip", required=True)
-parser.add_argument("-c", action="store", dest="count", default=2, type=int)
+parser.add_argument("-a", dest="ip", required=True)
+parser.add_argument("-c", dest="count", default=2, type=int)
 
 args = parser.parse_args()
 print(args)
