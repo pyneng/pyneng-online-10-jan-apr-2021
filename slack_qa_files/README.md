@@ -1,5 +1,6 @@
 # Вопросы и ответы из slack
 
+[Вопросы с предыдущего курса](https://github.com/pyneng/pyneng-online-9-may-aug-2020/tree/master/slack_qa_files)
 
 ## Вопрос: в чем разница писать result=6 или result = 6?
  
@@ -129,7 +130,6 @@ b: b
 
 
 
-
 ## Почему список/словарь в который собираются данные в функции, надо создавать внутри функции
 
 Очень часто в решении заданий встречается такой нюанс: функция должна собрать какие-то данные в список/словарь
@@ -154,6 +154,7 @@ Out[4]: [100, 200, 300, 700, 800]
 ```
 
 Исправить это можно переносом списка в функцию
+
 ```python
 In [20]: def func(items):
     ...:     result = []
@@ -172,29 +173,6 @@ Out[22]: [700, 800]
 Всё, что относится к функции лучше всегда писать внутри функции.
 Тест тут не проходит потому что внутри файла задания функция вызывается первый раз - всё ок, а потом тест вызывает её второй раз и там вдруг в два раза больше данных чем нужно.
 
-## Как делать get/post запросы в API
-
-С get/post можно работать с помощью requests. Мы его не рассматриваем,
-но есть [небольшой пример по запросу данных из github api с помощью requests](https://pyneng.github.io/pyneng-3/GitHub-API-JSON-example/).
-
-Часто если есть API, то есть и модуль который позволяет из Python работать с api вместо написания запросов через requests.
-Например, для Github API:
-* [так работаем в лоб через requests](https://pyneng.github.io/pyneng-3/GitHub-API-JSON-example/)
-* [так через модуль](https://github.com/pyneng/pyneng-online-9-may-aug-2020/blob/master/scripts/submit_tasks.py)
-
-
-## Как работать с xml
-
-Про работу с json говорить будем, xml - нет, но в Python есть встроенный модуль для работы с xml.
-Микропример тут есть ниже, побольше примеров [тут](https://pymotw.com/3/xml.etree.ElementTree/index.html).
-
-## Как работать с COM-портами
-
-Для подключения к com-портам есть модуль pyserial, [тут есть пример](https://codecamp.ru/documentation/python/5744/python-serial-communication-pyserial).
-
-## Нужен инструмент, который позволил бы отправить верный набор байтов, как низкоуровневую команду, и получить ответ - ок, не ок.
-
-Можно смотреть в сторону socket - это низкоуровневый модуль (встроенный) который позволяет отправлять что угодно
 
 ## a == b или a is b
 
@@ -219,98 +197,6 @@ Out[22]: [700, 800]
 и считали вывод, парсим его, записали результат в файл - тогда соблюдаем этот порядок в функциях.
 
 > [О структуре больших проектов](https://docs.python-guide.org/writing/structure/). И еще одна ссылка по этой же теме, с [примерами структуры проектов Flask/Django](https://realpython.com/python-application-layouts/).
-
-## Необходимо в Zabbix назначить имена около 300 Узлов связи
-
-### Первый вариант - изменение xml файла
-
-Данные для замены replace.json:
-
-```
-replace_data = {
-    "10.1.2.3": "LONDON-R1",
-    "10.2.2.5": "LONDON-R5"
-}
-```
-
-Узлы выгружаются в одном файле london.xml (сокращенный вывод, полный вывод в slack_qa_files/london.xml).
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<zabbix_export>
-    <version>4.2</version>
-    <date>2020-06-15T07:24:19Z</date>
-    <groups>
-        <group>
-            <name>LONDON/Ring 6</name>
-        </group>
-    </groups>
-    <hosts>
-        <host>
-            <host>10.1.2.3</host>
-            <name>10.1.2.3</name>
-            <description/>
-            <proxy/>
-         ...
-        </host>
-        <host>
-            <host>10.2.2.5</host>
-            <name>10.2.2.5</name>
-            <description/>
-            <proxy/>
-            <status>0</status>
-            <ipmi_authtype>-1</ipmi_authtype>
-        </host>
-    </hosts>
-</zabbix_export>
-```
-
-Нужно значение ключа  <name>10.1.2.3</name> заменить на <name>LONDON-R1</name> из словаря в файле replace.json.
-
-```python
-import xml.etree.ElementTree as ET
-import json
-
-replace_dict = "replace.json"
-data_file = "london.xml"
-
-with open(replace_dict) as json_data:
-    replace_from = json.load(json_data)
-
-with open(data_file) as f:
-    data = f.read()
-
-
-tree = ET.fromstring(data)
-for element in tree.getiterator():
-    if element.tag == "name" and element.text in replace_from:
-        element.text = replace_from[element.text]
-
-with open("new_london.xml", "wb") as f:
-    f.write(ET.tostring(tree, encoding="utf-8"))
-```
-
-### Второй вариант zabbixAPI
-
-```python
-from pyzabbix.api import ZabbixAPI
-import json
-
-replace_dict = "replace.json"
-
-with open(replace_dict) as json_data:
-    replace_from = json.load(json_data)
-
-
-zabbix = ZabbixAPI(url='https://zabbix.server', 
-                   user='User', 
-                   password='Password')
-for host in zabbix.host.get():
-    if replace_from.get(host['name']):
-        zabbix.host.update(hostid=host['hostid'], 
-                           name=replace_from[host['name']])
-zabbix.user.logout()
-```
 
 
 ## Что проверяет isinstance
@@ -368,17 +254,3 @@ In [17]: isinstance(result, Iterator)
 Out[17]: True
 ```
 
-## Нюанс работы с D-Link при подключении telnetlib
-
-> [Источник решения](https://forum.dlink.ru/viewtopic.php?f=2&t=143853&hilit=telnetlib#p764356)
-
-```python
-def bulk(self, cmd, opt):
-   pass
-
-
-def send_command_telnetlib(ip_address, command, username, password):
-    with telnetlib.Telnet(ip_address) as t:
-        t.set_option_negotiation_callback(bulk)
-        ...
-```
