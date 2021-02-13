@@ -2,6 +2,9 @@
 
 Описаны в файле [known_task_issues.md](https://github.com/pyneng/pyneng-online-10-jan-apr-2021/blob/main/known_task_issues.md)
 
+## Вопросы и ответы из slack
+
+[Вопросы и ответы из slack](https://github.com/pyneng/pyneng-online-10-jan-apr-2021/tree/main/slack_qa_files)
 
 ## Задания
 
