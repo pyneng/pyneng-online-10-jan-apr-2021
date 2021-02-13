@@ -1,6 +1,6 @@
 ## Известные проблемы/нюансы с заданиями
 
-Описаны в файле [known_task_issues.md]()
+Описаны в файле [known_task_issues.md](https://github.com/pyneng/pyneng-online-10-jan-apr-2021/blob/main/known_task_issues.md)
 
 
 ## Задания
