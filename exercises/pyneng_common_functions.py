@@ -70,7 +70,7 @@ def get_func_params_default_value(function):
 def ping(host):
     param = "-n" if system_name().lower() == "windows" else "-c"
     command = ["ping", param, "1", host]
-    reply = run(command, stdout=PIPE, stderr=PIPE, encoding="utf-8")
+    reply = run(command, stdout=PIPE, stderr=PIPE)
     return reply.returncode == 0
 
 
