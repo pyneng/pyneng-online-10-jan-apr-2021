@@ -1,13 +1,17 @@
 import re
 
-regex = "Host \S+ " "in vlan (\d+) " "is flapping between port " "(\S+) and port (\S+)"
+regex = (
+    r"Host (\S+) "
+    r"in vlan (\d+) .+"
+    r"port (\S+) and port (\S+)"
+)
 
 ports = set()
 
 with open("log.txt") as f:
-    for m in re.finditer(regex, f.read()):
-        vlan = m.group(1)
-        ports.add(m.group(2))
-        ports.add(m.group(3))
+    all_match = re.finditer(regex, f.read())
+    for m in all_match:
+        host, vlan, port1, port2 = m.groups()
+        ports.update((port1, port2))
 
-print("Петля между портами {} в VLAN {}".format(", ".join(ports), vlan))
+print(ports)
