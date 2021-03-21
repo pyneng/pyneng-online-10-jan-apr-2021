@@ -1,4 +1,4 @@
-- device_type: cisco_ios
+- device_type: cisco_ios_telnet
   host: 192.168.100.1
   username: cisco
   password: cisco
