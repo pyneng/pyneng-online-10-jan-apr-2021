@@ -4,7 +4,7 @@ import sys
 
 sys.path.append("..")
 
-from pyneng_common_functions import check_function_exists
+from pyneng_common_functions import check_function_exists, strip_empty_lines
 
 # Проверка что тест вызван через pytest ..., а не python ...
 from _pytest.assertion.rewrite import AssertionRewritingHook
@@ -40,7 +40,7 @@ def test_function_return_value(
         type(return_value) == str
     ), f"По заданию функция должна возвращать строку, а возвращает {type(return_value).__name__}"
     assert (
-        return_value == correct_return_value
+        strip_empty_lines(return_value) == strip_empty_lines(correct_return_value)
     ), "Функция возвращает неправильное значение"
 
     # по умолчанию, log должно быть равным True

@@ -27,6 +27,7 @@ def check_attr_or_method(obj, attr=None, method=None):
 
 
 def strip_empty_lines(output):
+    output = output.replace("\r\n", "\n")
     lines = []
     for line in output.strip().split("\n"):
         line = line.strip()
