@@ -18,7 +18,7 @@ logging.basicConfig(
 def send_show(device_dict, command):
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received: {}"
-    ip = device_dict["ip"]
+    ip = device_dict["host"]
     logging.info(start_msg.format(datetime.now().time(), ip))
     if ip == "192.168.100.1":
         time.sleep(5)
@@ -37,7 +37,7 @@ def send_command_to_devices(devices, command):
         for device in devices:
             future = executor.submit(send_show, device, command)
             future_list.append(future)
-            print("Future: {} for device {}".format(future, device["ip"]))
+            print("Future: {} for device {}".format(future, device["host"]))
         for f in as_completed(future_list):
             result = f.result()
             print("Future done {}".format(f))

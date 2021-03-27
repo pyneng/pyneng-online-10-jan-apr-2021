@@ -18,15 +18,15 @@ logging.basicConfig(
 def send_show(device, show):
     start_msg = "===> {} Connection: {}"
     received_msg = "<=== {} Received:   {}"
-    ip = device["ip"]
-    logging.info(start_msg.format(datetime.now().time(), ip))
-    if ip == "192.168.100.1":
+    host = device["host"]
+    logging.info(start_msg.format(datetime.now().time(), host))
+    if host == "192.168.100.1":
         time.sleep(5)
 
     with netmiko.ConnectHandler(**device) as ssh:
         ssh.enable()
         result = ssh.send_command(show)
-        logging.info(received_msg.format(datetime.now().time(), ip))
+        logging.info(received_msg.format(datetime.now().time(), host))
         return result
 
 
@@ -36,4 +36,4 @@ with open("devices.yaml") as f:
 with ThreadPoolExecutor(max_workers=3) as executor:
     result = executor.map(send_show, devices, repeat("sh clock"))
     for device, output in zip(devices, result):
-        print(device["ip"], output)
+        print(device["host"], output)

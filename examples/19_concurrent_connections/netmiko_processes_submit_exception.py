@@ -20,15 +20,15 @@ received_msg = "<=== {} Received: {}"
 
 
 def send_show(device_dict, command):
-    ip = device_dict["ip"]
-    logging.info(start_msg.format(datetime.now().time(), ip))
-    if ip == "192.168.100.1":
+    host = device_dict["host"]
+    logging.info(start_msg.format(datetime.now().time(), host))
+    if host == "192.168.100.1":
         time.sleep(5)
     with ConnectHandler(**device_dict) as ssh:
         ssh.enable()
         result = ssh.send_command(command)
-        logging.info(received_msg.format(datetime.now().time(), ip))
-    return {ip: result}
+        logging.info(received_msg.format(datetime.now().time(), host))
+    return {host: result}
 
 
 def send_command_to_devices(devices, command):

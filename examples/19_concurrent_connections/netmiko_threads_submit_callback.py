@@ -23,7 +23,7 @@ parsed_msg = "#### {} Parsed: {}"
 
 
 def send_show(device_dict, command):
-    ip = device_dict["ip"]
+    ip = device_dict["host"]
     logging.info(start_msg.format(datetime.now().time(), ip))
     if ip == "192.168.100.1":
         time.sleep(5)

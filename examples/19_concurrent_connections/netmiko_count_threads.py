@@ -12,13 +12,13 @@ from netmiko.ssh_exception import NetMikoAuthenticationException
 def send_show(device_dict, commands):
     if type(commands) == str:
         commands = [commands]
-    ip = device_dict["ip"]
+    host = device_dict["host"]
     result = ""
     with ConnectHandler(**device_dict) as ssh:
         ssh.enable()
         for command in commands:
             result += ssh.send_command(command)
-    return {ip: result}
+    return {host: result}
 
 
 def send_command_to_devices(devices, commands, max_threads=2):
