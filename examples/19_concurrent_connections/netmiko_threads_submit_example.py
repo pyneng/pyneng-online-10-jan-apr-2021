@@ -27,12 +27,12 @@ def send_show_command(device, command):
 
 
 def function1(device, command):
-    logging.info(f"FUNC1 Running {device['ip']}, command {command}")
+    logging.info(f"FUNC1 Running {device['host']}, command {command}")
     return send_show_command(device, command)
 
 
 def function2(device, command):
-    logging.info(f"FUNC2 Running {device['ip']}, command {command}")
+    logging.info(f"FUNC2 Running {device['host']}, command {command}")
     return send_show_command(device, command)
 
 

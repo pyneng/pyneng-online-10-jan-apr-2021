@@ -3,9 +3,9 @@
 192.168.100.1
 Building configuration...
 
-Current configuration : 3371 bytes
+Current configuration : 3107 bytes
 !
-! Last configuration change at 12:53:39 UTC Thu Mar 25 2021 by cisco
+! Last configuration change at 18:08:39 UTC Fri Apr 2 2021 by cisco
 version 15.2
 no service timestamps debug uptime
 no service timestamps log uptime
@@ -50,6 +50,8 @@ crypto pki token default removal timeout 0
 !
 !
 username cisco password 7 094F471A1A0A
+username user1 password 7 00141215170A
+username user3 password 7 06160E325F1D
 !
 redundancy
 !
@@ -72,29 +74,11 @@ policy-map OUT_QOS
 !
 !
 !
-interface Loopback8
- ip address 10.8.8.8 255.255.255.255
-!
-interface Loopback9
- ip address 10.90.90.1 255.255.255.255
-!
-interface Loopback22
- ip address 10.2.2.2 255.255.255.255
-!
-interface Loopback33
- no ip address
-!
-interface Loopback55
- ip address 5.5.5.5 255.255.255.255
+interface Loopback11
+ ip address 11.1.1.1 255.255.255.255
 !
 interface Loopback100
  ip address 10.1.1.100 255.255.255.255
-!
-interface Loopback123
- ip address 123.1.2.3 255.255.255.255
-!
-interface Loopback300
- ip address 10.30.3.3 255.255.255.255
 !
 interface Ethernet0/0
  ip address 192.168.101.1 255.255.255.0 secondary
@@ -193,9 +177,9 @@ end
 192.168.100.2
 Building configuration...
 
-Current configuration : 1989 bytes
+Current configuration : 2226 bytes
 !
-! Last configuration change at 09:22:06 UTC Sun Mar 21 2021 by cisco
+! Last configuration change at 16:18:27 UTC Fri Apr 2 2021 by cisco
 version 15.2
 service timestamps debug datetime msec
 service timestamps log datetime msec
@@ -273,6 +257,16 @@ interface Loopback19
 interface Loopback100
  ip address 10.100.100.2 255.255.255.0
 !
+interface Tunnel0
+ ip address 10.0.1.2 255.255.255.252
+ tunnel source 192.168.122.20
+ tunnel destination 192.168.122.10
+!
+interface Tunnel1
+ ip address 10.255.1.2 255.255.255.252
+ tunnel source 90.18.10.2
+ tunnel destination 80.241.1.1
+!
 interface Ethernet0/0
  ip address 192.168.100.2 255.255.255.0
 !
@@ -336,12 +330,11 @@ end
 
 
 192.168.100.3
-
 Building configuration...
 
-Current configuration : 1808 bytes
+Current configuration : 1807 bytes
 !
-! Last configuration change at 09:22:08 UTC Sun Mar 21 2021 by cisco
+! Last configuration change at 16:18:27 UTC Fri Apr 2 2021 by cisco
 version 15.2
 service timestamps debug datetime msec
 service timestamps log datetime msec
