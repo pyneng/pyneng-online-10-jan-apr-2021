@@ -12,15 +12,9 @@ VRF info: (vrf in name/id, vrf out name/id)
   4 79.0.0.9  4 msec *  1 msec
 """
 
-with open("traceroute.template") as template:
-    fsm = textfsm.TextFSM(template)
+with open("traceroute.template") as f:
+    fsm = textfsm.TextFSM(f)
     result = fsm.ParseText(traceroute)
 
 print(fsm.header)
 print(result)
-"""
-Example:
-
-['ID', 'Hop']
-[['1', '10.0.12.1'], ['2', '15.0.0.5'], ['3', '57.0.0.7'], ['4', '79.0.0.9']]
-"""

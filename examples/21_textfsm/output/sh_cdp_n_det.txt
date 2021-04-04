@@ -10,15 +10,9 @@ Holdtime : 164 sec
 Version :
 Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(55)SE9, RELEASE SOFTWARE (fc1)
 Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2014 by Cisco Systems, Inc.
-Compiled Mon 03-Mar-14 22:53 by prod_rel_team
 
-advertisement version: 2
-VTP Management Domain: ''
-Native VLAN: 1
-Duplex: full
 Management address(es):
-  IP address: 10.1.1.2
+  IP address: 10.1.21.2
 
 -------------------------
 Device ID: R1
