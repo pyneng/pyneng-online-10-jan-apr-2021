@@ -21,7 +21,7 @@ def test_templates_exists():
 
 
 def test_function_return_value():
-    correct_return_value_router = (
+    correct_return_value = (
         "router ospf 10\n"
         "router-id 10.0.0.1\n"
         "auto-cost reference-bandwidth 20000\n"
@@ -32,8 +32,6 @@ def test_function_return_value():
         "network 10.0.20.1 0.0.0.0 area 2\n"
         "passive-interface Fa0/0.10\n"
         "passive-interface Fa0/0.20\n"
-    )
-    correct_return_value_intf = (
         "interface Fa0/1\n"
         "ip ospf hello-interval 1\n"
         "interface Fa0/1.100\n"
@@ -57,17 +55,9 @@ def test_function_return_value():
     }
 
     return_value = task_20_1.generate_config(template, data)
-    correct_lines_router = set(correct_return_value_router.splitlines())
-    correct_lines_interface = set(correct_return_value_intf.splitlines())
+    correct_lines = set(correct_return_value.splitlines())
 
     return_value = strip_empty_lines(return_value)
     return_lines = set(return_value.splitlines())
 
-    # проверяем что строки из correct_return_value_router содержатся в return_value
-    assert correct_lines_router.issubset(
-        return_lines
-    ), "В итоговой конфигурации режима router ospf не все строки"
-    # проверяем что строки из correct_return_value_intf содержатся в return_value
-    assert correct_lines_interface.issubset(
-        return_lines
-    ), "В итоговой конфигурации интерфейсов не все строки"
+    assert return_lines == correct_lines, "В итоговой конфигурации ospf не все строки"
