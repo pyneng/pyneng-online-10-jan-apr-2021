@@ -7,7 +7,7 @@ def get_interfaces_without_ip(config):
         r"( .+\n)+"
     )
     interfaces_without_ip_address = []
-    match_all = re.finditer(regex, content, re.MULTILINE)
+    match_all = re.finditer(regex, config, re.MULTILINE)
     for m in match_all:
         # print(m.group())
         # print("#"*40)
