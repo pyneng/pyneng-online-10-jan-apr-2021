@@ -1,6 +1,9 @@
 from pprint import pprint
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
+from netmiko import ConnectHandler
+import paramiko
+import yaml
 
 
 class ScanDevices:
@@ -42,5 +45,13 @@ class ScanSSH(ScanDevices):
 
 
 if __name__ == "__main__":
+    # Ping scan
     s = ScanDevices(["8.8.8.8", "8.8.4.4", "10.1.1.1"])
     pprint(s.scan(), width=120)
+
+    # SSH scan
+    with open("devices.yaml") as f:
+        ssh_devices = yaml.safe_load(f)
+    ssh_scan = ScanSSH(ssh_devices)
+    pprint(ssh_scan.scan(), width=120)
+
