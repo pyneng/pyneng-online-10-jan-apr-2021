@@ -42,5 +42,5 @@ def test_task_stdout(capsys, monkeypatch, vlan, result):
     out, err = capsys.readouterr()
     correct_stdout = unified_columns_output(result)
     assert (
-        unified_columns_output(out.strip()) == correct_stdout
+        correct_stdout == unified_columns_output(out.strip())
     ), "На стандартный поток вывода выводится неправильная строка"
